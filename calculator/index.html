@@ -6,21 +6,41 @@
     <title>Help Support Graphing Calculators!</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        
         body {
             background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
             color: #fff; display: flex; flex-direction: column; align-items: center;
             padding: 20px; min-height: 100vh; overflow-x: hidden;
         }
+
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0; 
+            pointer-events: none;
+        }
+
+        h1, .search-container, .games-grid {
+            position: relative;
+            z-index: 1;
+        }
+
         h1 {
             font-size: 3.5em; margin: 20px 0 10px; text-transform: uppercase;
             text-shadow: 0 0 20px #00eaff; animation: fadeSlideDown 1s ease;
+            text-align: center;
         }
+
         @keyframes fadeSlideDown { 0% { opacity: 0; transform: translateY(-50px); } 100% { opacity: 1; transform: translateY(0); } }
         
         .search-container input {
             padding: 15px 25px; font-size: 1.1em; border-radius: 50px;
             border: 2px solid rgba(0, 234, 255, 0.3); background: rgba(255, 255, 255, 0.1);
             outline: none; color: white; width: 400px; margin-bottom: 30px; transition: 0.3s;
+            backdrop-filter: blur(5px);
         }
         .search-container input:focus { border-color: #00eaff; box-shadow: 0 0 25px rgba(0, 234, 255, 0.5); }
 
@@ -34,6 +54,7 @@
             transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex; flex-direction: column; align-items: center; opacity: 0;
             animation: cardFadeUp 0.6s forwards;
+            backdrop-filter: blur(10px);
         }
         @keyframes cardFadeUp { 100% { opacity: 1; transform: translateY(0); } }
         .game-card:hover { transform: translateY(-10px); border-color: #00eaff; box-shadow: 0 10px 30px rgba(0, 234, 255, 0.4); }
@@ -46,45 +67,68 @@
 </head>
 <body>
 
+    <div id="particles-js"></div>
+
     <h1>K!llS☰curly Foundation</h1>
     <div class="search-container"><input type="text" id="searchInput" placeholder="Search games..."></div>
     <div class="games-grid" id="gamesGrid"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
 <script>
+    particlesJS("particles-js", {
+        "particles": {
+            "number": { "value": 80, "density": { "enable": true, "value_area": 800 } },
+            "color": { "value": "#00eaff" },
+            "shape": { "type": "circle" },
+            "opacity": { "value": 0.5, "random": false },
+            "size": { "value": 3, "random": true },
+            "line_linked": { "enable": true, "distance": 150, "color": "#00eaff", "opacity": 0.4, "width": 1 },
+            "move": { "enable": true, "speed": 2, "direction": "none", "random": false, "straight": false, "out_mode": "out", "bounce": false }
+        },
+        "interactivity": {
+            "detect_on": "canvas",
+            "events": { "onhover": { "enable": true, "mode": "grab" }, "onclick": { "enable": true, "mode": "push" }, "resize": true },
+            "modes": { "grab": { "distance": 140, "line_linked": { "opacity": 1 } }, "push": { "particles_nb": 4 } }
+        },
+        "retina_detect": true
+    });
+
     const PRIORITY_GAMES = ["Subway Surfers", "Slope", "Stickman Hook", "paper.io", "basketrandom", "Cookie Clicker", "Dadish", "1v1.lol", "Drift Boss", "Retro Bowl", "Doge Miner", "Crossy Rooad"];
     let allGames = [];
 
     async function loadGames() {
-        const response = await fetch("https://cdn.jsdelivr.net/gh/gn-math/assets/zones.json");
-        const games = await response.json();
-        
-        let fetched = games.filter(g => g.id !== -1).map(g => ({
-            name: g.name,
-            image: g.cover.replace('{COVER_URL}','https://cdn.jsdelivr.net/gh/gn-math/covers@main'),
-            url: g.url.replace('{HTML_URL}','https://cdn.jsdelivr.net/gh/gn-math/html@main'),
-            type: 'standard'
-        }));
+        try {
+            const response = await fetch("https://cdn.jsdelivr.net/gh/gn-math/assets/zones.json");
+            const games = await response.json();
+            
+            let fetched = games.filter(g => g.id !== -1).map(g => ({
+                name: g.name,
+                image: g.cover.replace('{COVER_URL}','https://cdn.jsdelivr.net/gh/gn-math/covers@main'),
+                url: g.url.replace('{HTML_URL}','https://cdn.jsdelivr.net/gh/gn-math/html@main'),
+                type: 'standard'
+            }));
 
-        const shellShockers = {
-            name: "Shell Shockers",
-            image: "https://imgs.crazygames.com/shellshockersio_1x1/20260108131651/shellshockersio_1x1-cover?format=auto&quality=100&metadata=none&width=1200",
-            url: "https://yolk.today",
-            type: 'embed'
-        };
+            const shellShockers = {
+                name: "Shell Shockers",
+                image: "https://imgs.crazygames.com/shellshockersio_1x1/20260108131651/shellshockersio_1x1-cover?format=auto&quality=100&metadata=none&width=1200",
+                url: "https://yolk.today",
+                type: 'embed'
+            };
 
-        allGames = [];
-        
-        PRIORITY_GAMES.forEach(p => {
-            let found = fetched.find(g => g.name === p);
-            if (found) allGames.push(found);
-            if (p === "Crossy Rooad") allGames.push(shellShockers);
-        });
+            allGames = [];
+            PRIORITY_GAMES.forEach(p => {
+                let found = fetched.find(g => g.name === p);
+                if (found) allGames.push(found);
+                if (p === "Crossy Rooad") allGames.push(shellShockers);
+            });
 
-        fetched.forEach(g => {
-            if (!PRIORITY_GAMES.includes(g.name)) allGames.push(g);
-        });
+            fetched.forEach(g => {
+                if (!PRIORITY_GAMES.includes(g.name)) allGames.push(g);
+            });
 
-        displayGames(allGames);
+            displayGames(allGames);
+        } catch (e) { console.error("Failed to load games", e); }
     }
 
     function displayGames(list) {
