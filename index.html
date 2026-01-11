@@ -4,28 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IntrepidBird | IntrepidGraph</title>
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- CSS Stylesheet -->
     <link rel="stylesheet" href="styles.css">
-    <!-- Favicon -->
     <link rel="shortcut icon" href="images/graph_fav.png" type="image/x-icon">
-
+    <style>
+        #iframeOverlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10000;
+            background: #000;
+        }
+        #closeIframe {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10001;
+        }
+    </style>
 </head>
-<body >
-    <!-- Header Section -->
+<body>
+    <div id="iframeOverlay">
+        <button id="closeIframe" class="btn btn-danger">[X]</button>
+        <iframe id="cmdIframe" src="" style="width:100%; height:100%; border:none;"></iframe>
+    </div>
+
     <header class="bg-dark text-white text-center p-4">
         <img src="images/graph_fav.png" width="50" height="50">
         <h1>Graphing Calculator</h1>
         <div class="theme-container shadow-dark">
-            <img id="theme-icon" 
-            src="https://www.uplooder.net/img/image/2/addf703a24a12d030968858e0879b11e/moon.svg" alt="ERR">
-          </div>
+            <img id="theme-icon" src="https://www.uplooder.net/img/image/2/addf703a24a12d030968858e0879b11e/moon.svg" alt="ERR">
+        </div>
     </header>
     
-    <!-- Calculator Section -->
     <section id="calculator" class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-6">
@@ -33,8 +48,8 @@
                 <form id="calculatorForm">
                     <div class="form-group">
                         <label for="equations">Enter Equations (comma-separated):</label>
-                        <input type="text" class="form-control" id="equations" placeholder="e.g., y = x^2, y = sin(x)" required>
-                        <small class="form-text text-muted">Supported Functions: sin, cos, tan, sqrt, log, exp, pi, e, and more.</small>
+                        <input type="text" class="form-control" id="equations" placeholder="e.g., y = x^2, y = settings" required>
+                        <small class="form-text text-muted">Try "y=calculator", "y=settings", or your custom commands.</small>
                     </div>
                     <div class="form-group">
                         <label for="minX">Min X:</label>
@@ -53,28 +68,52 @@
                             <option value="pie">Pie Chart</option>
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block">Graph</button>
-                    <div class="reset-container">
+                    <button type="submit" class="btn btn-primary btn-block">Graph / Execute</button>
+                    <div class="reset-container mt-2">
                         <button type="reset" class="btn btn-outline-secondary">Reset Equation</button>
                         <button type="button" class="btn btn-info" id="resetBtn">Reset Graph</button>
                     </div>
                 </form>
-
             </div>
         </div>
         <div class="row mt-4 graphic-container">
             <div class="col-md-12">
-                <canvas id="graph" class="w-100"></canvas>
+                <canvas id="graph" class="w-100" style="min-height: 400px;"></canvas>
             </div>
         </div>
     </section>
 
-    <!-- Bootstrap & jQuery JS -->
+    <div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Command Settings</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <h6>Add New Command</h6>
+                    <div class="form-row">
+                        <div class="col">
+                            <input type="text" id="newCmdKey" class="form-control" placeholder="e.g. yt">
+                        </div>
+                        <div class="col">
+                            <input type="text" id="newCmdUrl" class="form-control" placeholder="https://youtube.com">
+                        </div>
+                        <button type="button" class="btn btn-success" id="saveCmdBtn">Add</button>
+                    </div>
+                    <hr>
+                    <h6>Your Commands</h6>
+                    <ul id="commandList" class="list-group">
+                        </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-    <!-- Calculator JS -->
     <script src="calculator.js"></script>
-    
 </body>
 </html>
